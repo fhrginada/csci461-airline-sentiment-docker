@@ -370,9 +370,9 @@ The `screenshots/` folder documents the Docker workflow and the execution of the
 
 | Member | Responsibility |
 |---|---|
-| Member 1 (name) | Docker environment, README and Docker Hub |
-| Member 2 (name) | Data understanding, cleaning and sampling |
-| Member 3 (name) | Text features, correlation and text analysis |
-| Member 4 (name) | Machine learning: classification, K-Means and model improvement |
+| Member 1 (Mysoun Ahmed) | Docker environment, README and Docker Hub |
+| Member 2 (Malak Ayman) | Data understanding, cleaning and sampling |
+| Member 3 (Doha waleed) | Text features, correlation and text analysis |
+| Member 4 (Nada Hassan) | Machine learning: classification, K-Means and model improvement |
 
-*Replace the names above with the real team members.*
+
