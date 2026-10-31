@@ -1,0 +1,84 @@
+K-MEANS CLUSTERING - Twitter US Airline Sentiment
+====================================================
+
+Records clustered: 14485
+Representation: TF-IDF (min_df=3, max_df=0.5, English stop words removed) -> TruncatedSVD(50) -> L2 normalisation
+Chosen k: 8   (random_state=42, n_init=10)
+Silhouette score: 0.0905
+Inertia: 10815.7
+
+k selection experiment (SVD space):
+ k  inertia  silhouette  smallest_cluster
+ 2  12600.3      0.0387              3278
+ 3  12204.0      0.0531               994
+ 4  11847.5      0.0657               956
+ 5  11500.8      0.0796               548
+ 6  11300.3      0.0768               928
+ 7  11037.7      0.0770               860
+ 8  10815.7      0.0905               543
+ 9  10541.8      0.0952               531
+10  10388.3      0.0989               518
+11  10257.0      0.1002               534
+12  10020.9      0.1073               475
+
+CLUSTER SIZES, TOP TERMS AND MEANING
+
+Cluster 0: 2450 records (16.9%)
+  top terms: flight, cancelled, flightled, late, delayed, tomorrow, help, just, trying, flighted
+  real labels: 75.1% negative, 18.1% neutral, 6.7% positive
+  meaning: Cancellations and delays (cancelled, flightled, late, delayed, tomorrow): mostly negative.
+
+Cluster 1: 2448 records (16.9%)
+  top terms: way, make, ll, ticket, airport, check, trying, best, change, right
+  real labels: 58.9% negative, 31.0% neutral, 10.1% positive
+  meaning: Ticket, check-in and change requests (ticket, airport, check, change, trying): mixed, with the most neutral tweets of all clusters.
+
+Cluster 2: 905 records (6.2%)
+  top terms: service, customer, worst, terrible, flight, poor, line, phone, care, hold
+  real labels: 79.4% negative, 7.0% neutral, 13.6% positive
+  meaning: Customer-service complaints (service, customer, worst, terrible, poor): the most negative cluster.
+
+Cluster 3: 5413 records (37.4%)
+  top terms: just, flights, help, bag, don, like, need, phone, fly, hold
+  real labels: 62.3% negative, 24.9% neutral, 12.8% positive
+  meaning: General catch-all cluster (help, flights, bag, phone, need): the largest cluster, with a label mix close to that of the whole dataset.
+
+Cluster 4: 543 records (3.7%)
+  top terms: thank, great, flight, just, response, help, ok, ll, follow, guys
+  real labels: 13.3% negative, 12.2% neutral, 74.6% positive
+  meaning: Short thank-you / positive replies (thank, great, response): mostly positive.
+
+Cluster 5: 705 records (4.9%)
+  top terms: time, flight, wait, flying, departure, check, just, delayed, minutes, thanks
+  real labels: 75.0% negative, 13.8% neutral, 11.2% positive
+  meaning: Waiting time and departure delays (time, wait, departure, delayed): mostly negative.
+
+Cluster 6: 883 records (6.1%)
+  top terms: thanks, flight, just, great, got, help, guys, response, ll, awesome
+  real labels: 25.7% negative, 15.7% neutral, 58.6% positive
+  meaning: Thanks and praise for help received (thanks, great, guys, response): mostly positive.
+
+Cluster 7: 1138 records (7.9%)
+  top terms: plane, gate, sitting, flight, agent, ua, crew, waiting, min, hour
+  real labels: 77.2% negative, 13.5% neutral, 9.2% positive
+  meaning: Stuck at the gate / on the plane (plane, gate, sitting, agent, crew, waiting): mostly negative.
+
+COMPARISON WITH THE REAL LABELS
+airline_sentiment  negative  neutral  positive
+cluster                                       
+0                      1841      444       165
+1                      1441      759       248
+2                       719       63       123
+3                      3374     1347       692
+4                        72       66       405
+5                       529       97        79
+6                       227      139       517
+7                       879      154       105
+ARI=0.025  NMI=0.066  purity=0.670
+
+INTERPRETATION
+- K-Means is unsupervised: it never used the labels. It grouped tweets by shared vocabulary.
+- TF-IDF (stop words removed) + TruncatedSVD(50 components, 17.0% of the variance) + L2 normalisation.
+- k was chosen by experiment (k=2..12, inertia, silhouette, smallest-cluster size, reading top terms), not fixed to 3 (the number of classes): silhouette has no clear peak and is low for every k (short, sparse tweets), the elbow is gradual after k~6-8, and k=8 gives clusters with >500 tweets and distinct themes (k=6 merges themes, k=10 splits the positive tweets into near-duplicate clusters).
+- The silhouette is low (0.090): clusters overlap and are not well separated, which is normal for short tweets. The clusters are useful for exploring topics but are not sharp.
+- Against the real labels: ARI=0.025, NMI=0.066 (both near 0). The clusters follow topic, not sentiment, so cluster IDs do not match class IDs. Some clusters still lean to a label: thank-you clusters are mostly positive; customer-service, gate and cancellation clusters are 75-80% negative.

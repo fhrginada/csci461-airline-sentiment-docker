@@ -1,0 +1,61 @@
+SUPERVISED TEXT CLASSIFICATION - Twitter US Airline Sentiment
+==============================================================
+
+Records used: 14485 (empty cleaned tweets removed: 0)
+Split: 80% train (11588) / 20% test (2897), stratified, random_state=42
+Features: TF-IDF (fitted on the training set only, min_df=2, sublinear_tf=True)
+Target: airline_sentiment (negative / neutral / positive)
+Majority-class baseline accuracy: 0.6269
+
+MODEL COMPARISON (test set)
+                               model  accuracy  macro_precision  macro_recall  macro_f1
+           Multinomial NB (unigrams)    0.7218           0.7931        0.5147    0.5516
+      Logistic Regression (unigrams)    0.7963           0.7722        0.6871    0.7193
+Logistic Regression (tuned, n-grams)    0.7922           0.7398        0.7400    0.7391
+
+Tuning (GridSearchCV, 5-fold, scoring=macro-F1, train only)
+  best params: {'clf__C': 2, 'clf__class_weight': 'balanced', 'tfidf__ngram_range': (1, 2)}
+  best CV macro-F1: 0.7425
+
+FINAL MODEL: Logistic Regression (tuned, n-grams)
+  Accuracy:           0.7922
+  Macro precision:    0.7398
+  Macro recall:       0.7400
+  Macro F1:           0.7391
+  Weighted precision: 0.7971
+  Weighted recall:    0.7922
+  Weighted F1:        0.7942
+
+Per-class report:
+              precision    recall  f1-score   support
+
+    negative      0.879     0.861     0.870      1816
+     neutral      0.595     0.656     0.624       614
+    positive      0.745     0.702     0.723       467
+
+    accuracy                          0.792      2897
+   macro avg      0.740     0.740     0.739      2897
+weighted avg      0.797     0.792     0.794      2897
+
+Confusion matrix (rows = actual, columns = predicted; order: negative, neutral, positive):
+          negative  neutral  positive
+negative      1564      198        54
+neutral        153      403        58
+positive        63       76       328
+
+Top words per class (largest coefficients):
+  negative: not, no, delayed, hours, worst, why, your, nothing, cancelled, hour
+  neutral: is there, hi, can you, do you, is your, can, dm, any, do, destinationdragons
+  positive: great, thanks, awesome, love, amazing, thank, appreciate, best, thx, the best
+
+INTERPRETATION
+1. The final model (Logistic Regression (tuned, n-grams)) reaches accuracy 0.792 vs a majority-class baseline of 0.627; macro-F1 is 0.739.
+2. Macro-F1 (not accuracy) was used to pick the model because the classes are imbalanced. Tuning (bigrams, class_weight=balanced, C=2) raised macro-F1 and recall for the minority classes, at a very small cost in accuracy. Naive Bayes had high precision but low recall on neutral/positive tweets.
+3. Negative tweets are classified best (F1 0.87); neutral is the hardest class (F1 0.62) and is mostly confused with negative, because neutral tweets are often questions or short statements without sentiment words.
+4. The strongest words per class are sensible (negative: not, delayed, hours, worst, cancelled; positive: thanks, great, awesome, love).
+
+LIMITATIONS
+- TF-IDF ignores word order, context and sarcasm.
+- Crowd-sourced labels are noisy, particularly for the neutral class.
+- Some top words are dataset artefacts (e.g. the promo hashtag 'destinationdragons').
+- A single train/test split on one week of tweets (Feb 2015): limited generalisation.
